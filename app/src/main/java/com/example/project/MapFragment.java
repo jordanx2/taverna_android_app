@@ -1,21 +1,23 @@
 package com.example.project;
 
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +37,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     MapView mapView;
     GoogleMap maps;
+
+    final int PERMISSION_REQUEST_CODE = 1;
 
     public MapFragment() {
     }
@@ -72,15 +76,64 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         maps = googleMap;
         maps.getUiSettings().setMyLocationButtonEnabled(false);
+
         if (ActivityCompat.checkSelfPermission(
-                getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+                getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Request permission to use location services
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMISSION_REQUEST_CODE);
         }
+
         maps.setMyLocationEnabled(true);
-        maps.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(43.1, -87.9)));
+        FusedLocationProviderClient clientLocation = LocationServices.getFusedLocationProviderClient(getContext());
+        clientLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    // Get the users longitude and latitude position
+                    double userLatitude = location.getLatitude();
+                    double userLongitude = location.getLongitude();
+
+                    // Update the camera position
+                    LatLng userLatLng = new LatLng(userLatitude, userLongitude);
+
+                    // Set the zoom level as required
+                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 9f));
+                }
+            }
+        });
+
     }
 }
