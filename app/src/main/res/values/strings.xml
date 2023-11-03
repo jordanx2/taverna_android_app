@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Project</string>
+    <string name="directions"><b><i>directions</i></b></string>
+
+    <string-array name="kmOptions">
+        <item>5km</item>
+        <item>10km</item>
+        <item>15km</item>
+        <item>20km</item>
+        <item>25km</item>
+        <item>30km</item>
+        <item>35km</item>
+        <item>40km</item>
+        <item>45km</item>
+        <item>50km</item>
+    </string-array>
+
+
+</resources>
