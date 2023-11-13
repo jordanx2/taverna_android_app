@@ -109,11 +109,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            // Request permission to use location services
-            ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-            }, PERMISSION_REQUEST_CODE);
+            // Causing some bugs requesting user permissions, will revisit
+//            // Request permission to use location services
+//            ActivityCompat.requestPermissions(getActivity(), new String[]{
+//                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+//                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            }, PERMISSION_REQUEST_CODE);
         }
 
         maps.setMyLocationEnabled(true);

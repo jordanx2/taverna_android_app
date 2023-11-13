@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_purple"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/favItemImg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:src="@drawable/balginn"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/favEstablismentName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:layout_toEndOf="@id/favItemImg"
+        android:textSize="24sp"
+        tools:text="Balgriffin Inn" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/locationDirections1"
+        android:text="@string/directions"
+        android:textColor="@color/white"
+        android:src="@drawable/baseline_map_24"
+        android:tint="@color/white"
+        android:layout_toEndOf="@id/favEstablismentName"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="50dp"
+        />
+</RelativeLayout>

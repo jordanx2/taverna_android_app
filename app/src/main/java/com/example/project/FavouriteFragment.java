@@ -1,12 +1,18 @@
 package com.example.project;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,12 +59,26 @@ public class FavouriteFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favourite, container, false);
+        View view = inflater.inflate(R.layout.fragment_favourite, container, false);
+
+        RecyclerView recyclerView = view.findViewById(R.id.favouritesRecycle);
+        ArrayList<FavouriteItem> list = new ArrayList<>();
+
+        list.add(new FavouriteItem("Balgriffin inn", R.drawable.balginn, null));
+        list.add(new FavouriteItem("Cock and Bull", R.drawable.cockbull, null));
+        list.add(new FavouriteItem("Viscount", R.drawable.viscount, null));
+
+
+        FavouriteAdapter adapter = new FavouriteAdapter(list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(adapter);
+
+        return view;
     }
 }
