@@ -27,20 +27,29 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp"
         android:layout_toEndOf="@id/favItemImg"
-        android:textSize="24sp"
+        android:textSize="16sp"
         tools:text="Balgriffin Inn" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/locationDirections1"
-        android:text="@string/directions"
-        android:textColor="@color/white"
+        android:id="@+id/locationDirections"
         android:src="@drawable/baseline_map_24"
         android:tint="@color/white"
-        android:layout_toEndOf="@id/favEstablismentName"
+        android:layout_toStartOf="@id/deleteFavourite"
         android:layout_centerVertical="true"
-        android:layout_marginStart="50dp"
+        android:layout_marginEnd="20dp"
         />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteFavourite"
+        android:src="@drawable/delete_fav"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        />
+
 </RelativeLayout>
 

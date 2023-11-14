@@ -3,6 +3,8 @@ package com.example.project;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,10 +76,21 @@ public class HomeFragment extends Fragment {
                 getResources().getStringArray(R.array.kmOptions)
         );
 
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         distance.setAdapter(adapter);
+
+        RecyclerView recyclerView = view.findViewById(R.id.homeRecycleView);
+        ArrayList<Place> places = new ArrayList<>();
+        places.add(new Place("Balgriffin inn", 0, 0, "", 0.0, "", R.drawable.balginn));
+        places.add(new Place("Viscount", 0, 0, "", 0.0, "", R.drawable.viscount));
+        places.add(new Place("Goblet", 0, 0, "", 0.0, "", R.drawable.goblet));
+        places.add(new Place("Cock and Bull", 0, 0, "", 0.0, "", R.drawable.cockbull));
+        places.add(new Place("Beaumount House", 0, 0, "", 0.0, "", R.drawable.beaumount));
+
+        PlaceAdapter placeAdapter = new PlaceAdapter(places);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(placeAdapter);
 
         return view;
     }
