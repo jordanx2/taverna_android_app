@@ -16,6 +16,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 
@@ -38,7 +39,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     MapView mapView;
     GoogleMap maps;
 
-    final int PERMISSION_REQUEST_CODE = 1;
+    final int PERMISSION_REQUEST_CODE = 101;
 
     public MapFragment() {
     }
@@ -111,10 +112,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // Causing some bugs requesting user permissions, will revisit
 //            // Request permission to use location services
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{
-//                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-//                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-//            }, PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMISSION_REQUEST_CODE);
         }
 
         maps.setMyLocationEnabled(true);
@@ -123,15 +124,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
-                    // Get the users longitude and latitude position
+                    // Get the users longitude and latitude position (used in production)
                     double userLatitude = location.getLatitude();
                     double userLongitude = location.getLongitude();
 
-                    // Update the camera position
-                    LatLng userLatLng = new LatLng(userLatitude, userLongitude);
+                    // Update the camera position (used in production)
+//                    LatLng userLatLng = new LatLng(userLatitude, userLongitude);
+
+                    // Testing coordinates
+                    double testLat = 53.354440;
+                    double testLong = -6.278720 ;
+                    LatLng testLatLng = new LatLng(testLat, testLong);
+
 
                     // Set the zoom level as required
-                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 9f));
+                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(testLatLng, 14f));
+                    maps.addMarker(new MarkerOptions().position(testLatLng));
                 }
             }
         });
