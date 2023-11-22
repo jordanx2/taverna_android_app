@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:padding="5dp">
 
         <ImageView
             android:id="@+id/favItemImg"
@@ -34,7 +35,8 @@
             android:layout_below="@id/favItemImg"
             android:textSize="16sp"
             tools:text="Balgriffin Inn"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
 
     </RelativeLayout>
 
@@ -42,10 +44,11 @@
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/imgTextContainer"
+        android:layout_toStartOf="@id/deleteFavourite"
         android:numStars="4"
         android:layout_centerInParent="true"
         android:progressTint="#FFD700"
+        android:layout_marginRight="30dp"
         />
 
 
@@ -61,14 +64,23 @@
 <!--        />-->
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:id="@+id/deleteFavourite"
         android:src="@drawable/delete_fav"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"
         />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/white"
+        android:layout_below="@id/imgTextContainer"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
 
 </RelativeLayout>
 

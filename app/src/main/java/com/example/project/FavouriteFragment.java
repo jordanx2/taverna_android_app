@@ -74,6 +74,10 @@ public class FavouriteFragment extends Fragment {
         list.add(new FavouriteItem("Balgriffin inn", R.drawable.balginn, null));
         list.add(new FavouriteItem("Cock and Bull", R.drawable.cockbull, null));
         list.add(new FavouriteItem("Viscount", R.drawable.viscount, null));
+        list.add(new FavouriteItem("Goblet", R.drawable.goblet, null));
+        list.add(new FavouriteItem("Beaumount House", R.drawable.beaumount, null));
+
+
 
 
         FavouriteAdapter adapter = new FavouriteAdapter(list);

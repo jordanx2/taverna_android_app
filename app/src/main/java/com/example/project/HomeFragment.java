@@ -1,7 +1,7 @@
 package com.example.project;
 
 import android.os.Bundle;
-
+import android.util.Log;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -91,6 +95,17 @@ public class HomeFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(placeAdapter);
+
+        RetrieveEstablishments request = new RetrieveEstablishments(this.getContext().getString(R.string.google_maps_key), new RetrieveEstablishmentsCallback() {
+            @Override
+            public void onResult(JSONArray response) {
+                JSONArray responseJSON = response;
+
+            }
+
+        });
+
+        new Thread(request).start();
 
         return view;
     }
