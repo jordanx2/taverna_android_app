@@ -2,23 +2,20 @@ package com.example.project;
 
 public class Place {
     private String placeName;
-    private long placeLatitude;
-    private long placeLongitude;
+    private double placeLatitude;
+    private double placeLongitude;
     private String placeID;
-    private double placeRating;
+    private int placeRating;
     private String placePhotoReference;
 
-    // Temp for for the mean time
-    private int resourceID;
 
-    public Place(String placeName, long placeLatitude, long placeLongitude, String placeID, double placeRating, String placePhotoReference, int resourceID) {
+    public Place(String placeName, double placeLatitude, double placeLongitude, String placeID, int placeRating, String placePhotoReference) {
         this.placeName = placeName;
         this.placeLatitude = placeLatitude;
         this.placeLongitude = placeLongitude;
         this.placeID = placeID;
         this.placeRating = placeRating;
         this.placePhotoReference = placePhotoReference;
-        this.resourceID = resourceID;
     }
 
     public String getPlaceName() {
@@ -29,7 +26,7 @@ public class Place {
         this.placeName = placeName;
     }
 
-    public long getPlaceLatitude() {
+    public double getPlaceLatitude() {
         return placeLatitude;
     }
 
@@ -37,7 +34,7 @@ public class Place {
         this.placeLatitude = placeLatitude;
     }
 
-    public long getPlaceLongitude() {
+    public double getPlaceLongitude() {
         return placeLongitude;
     }
 
@@ -57,7 +54,7 @@ public class Place {
         return placeRating;
     }
 
-    public void setPlaceRating(double placeRating) {
+    public void setPlaceRating(int placeRating) {
         this.placeRating = placeRating;
     }
 
@@ -67,13 +64,5 @@ public class Place {
 
     public void setPlacePhotoReference(String placePhotoReference) {
         this.placePhotoReference = placePhotoReference;
-    }
-
-    public int getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(int resourceID) {
-        this.resourceID = resourceID;
     }
 }

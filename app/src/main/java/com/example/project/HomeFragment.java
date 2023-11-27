@@ -10,14 +10,19 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +72,12 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    static ArrayList<Place> placesCache = new ArrayList<>();
+    static ArrayList<Place> placesBuffer = new ArrayList<>();
+    static int currentIdx = 0;
+    static boolean sendRequest = true;
+    private static int kmSpinnerValue = 1000;
+    private int kmSpinnerPosition = 1;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,31 +94,113 @@ public class HomeFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         distance.setAdapter(adapter);
 
-        RecyclerView recyclerView = view.findViewById(R.id.homeRecycleView);
-        ArrayList<Place> places = new ArrayList<>();
-        places.add(new Place("Balgriffin inn", 0, 0, "", 0.0, "", R.drawable.balginn));
-        places.add(new Place("Viscount", 0, 0, "", 0.0, "", R.drawable.viscount));
-        places.add(new Place("Goblet", 0, 0, "", 0.0, "", R.drawable.goblet));
-        places.add(new Place("Cock and Bull", 0, 0, "", 0.0, "", R.drawable.cockbull));
-        places.add(new Place("Beaumount House", 0, 0, "", 0.0, "", R.drawable.beaumount));
-
-        PlaceAdapter placeAdapter = new PlaceAdapter(places);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(placeAdapter);
-
-        RetrieveEstablishments request = new RetrieveEstablishments(this.getContext().getString(R.string.google_maps_key), new RetrieveEstablishmentsCallback() {
+        distance.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onResult(JSONArray response) {
-                JSONArray responseJSON = response;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String item = String.valueOf(parent.getItemAtPosition(position));
+                kmSpinnerValue = Integer.parseInt(item.substring(0, item.length() - 2)) * 1000;
+                kmSpinnerPosition = position;
+                makeRequest();
 
             }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        new Thread(request).start();
+
+        RecyclerView recyclerView = view.findViewById(R.id.homeRecycleView);
+        Button gntBtn = view.findViewById(R.id.generateBtn);
+        gntBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int threshold = placesCache.size();
+                int displayItems = threshold / 4;
+
+                if(currentIdx < threshold) {
+                    fillBuffer(displayItems);
+                    currentIdx += displayItems;
+                    sendRequest = false;
+                }
+                else{
+                    Toast.makeText(view.getContext(), "All bars viewed within: " + (kmSpinnerValue / 1000) + "km.\nIncreased distance by 1km", Toast.LENGTH_LONG).show();
+                    kmSpinnerPosition += 1;
+                    distance.setSelection(kmSpinnerPosition);
+                    sendRequest = true;
+                    currentIdx = 0;
+                }
+                PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer);
+                recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                recyclerView.setAdapter(placeAdapter);
+                placesBuffer = new ArrayList<>();
+
+            }
+        });
 
         return view;
+    }
+
+    public void makeRequest(){
+        try {
+            if (sendRequest) {
+                RetrieveEstablishments request = new RetrieveEstablishments(getString(R.string.google_maps_key), kmSpinnerValue, new RetrieveEstablishmentsCallback() {
+                    @Override
+                    public void onResult(JSONArray response) {
+                        placesCache = loadPlaces(response);
+                        currentIdx = 0;
+                        placesBuffer = new ArrayList<>();
+                    }
+
+                });
+                new Thread(request).start();
+            }
+        } catch(ThreadDeath e){
+            Log.e("Error", String.valueOf(e));
+        }
+    }
+
+    public void fillBuffer(int displayItems){
+        try {
+            for (int i = currentIdx; i < currentIdx + displayItems; i++) {
+                placesBuffer.add(placesCache.get(i));
+            }
+        } catch(IndexOutOfBoundsException e){
+            Log.e("Error", "index out of bounds");
+        }
+    }
+
+
+    public ArrayList<Place> loadPlaces(JSONArray response){
+        try {
+            ArrayList<Place> result = new ArrayList<>();
+            for (int i = 0; i < response.size(); i++) {
+                JSONObject place = (JSONObject) response.get(i);
+                String name = String.valueOf(place.get("name"));
+                String placeID = String.valueOf(place.get("place_id"));
+
+                JSONObject geo = (JSONObject) place.get("geometry");
+                JSONObject location = (JSONObject) geo.get("location");
+
+                double lat = Double.parseDouble(String.valueOf(location.get("lat")));
+                double lng = Double.parseDouble(String.valueOf(location.get("lng")));
+
+                JSONArray photoArray = (JSONArray) place.get("photos");
+                String photoReference = "";
+                if (photoArray != null) {
+                    JSONObject photoObj = (JSONObject) photoArray.get(0);
+                    photoReference = String.valueOf(photoObj.get("photo_reference"));
+                }
+
+                Place addPlace = new Place(name, lat, lng, placeID, 0, photoReference);
+                result.add(addPlace);
+            }
+
+            return result;
+        } catch(Exception e){
+            Log.e("Error", String.valueOf(e));
+        }
+
+        return null;
     }
 
 }

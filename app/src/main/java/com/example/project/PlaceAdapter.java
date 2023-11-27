@@ -27,7 +27,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull PlaceAdapter.ViewHolder holder, int position) {
         Place place = newPlaces.get(position);
-        holder.establishmentItemImg.setImageResource(place.getResourceID());
+//        holder.establishmentItemImg.setImageResource(place.getResourceID());
+
+
         holder.establismentItemName.setText(place.getPlaceName());
     }
 

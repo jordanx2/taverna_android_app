@@ -1,6 +1,8 @@
 package com.example.project;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,10 +19,13 @@ public class RetrieveEstablishments extends Thread{
     private final String API_KEY;
     private RetrieveEstablishmentsCallback callback;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private int radius;
 
-    public RetrieveEstablishments(String API_KEY, RetrieveEstablishmentsCallback callback) {
+    public RetrieveEstablishments(String API_KEY, int radius, RetrieveEstablishmentsCallback callback) {
         this.API_KEY = API_KEY;
+        this.radius = radius;
         this.callback = callback;
+
     }
 
     public void run(){
@@ -30,7 +35,8 @@ public class RetrieveEstablishments extends Thread{
 
     public void makeRequest() {
         try {
-            String request = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius=5000&type=bar&key=" + this.API_KEY;
+            Log.d("changed radius:" , "new radius: " + this.radius);
+            String request = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius=" + this.radius + "&type=bar&opennow=true&key=" + this.API_KEY;
             URL url = new URL(request);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             InputStream stream = conn.getInputStream();
@@ -49,17 +55,6 @@ public class RetrieveEstablishments extends Thread{
 
         } catch (IOException e) {}
 
-    }
-
-    public JSONObject parseToJSONObject(String value) {
-        JSONObject parsedJSON = null;
-        try {
-            JSONParser parser = new JSONParser();
-            parsedJSON = (JSONObject) parser.parse(value);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return parsedJSON;
     }
 
     public JSONArray parseToJSONArray(String res) {
