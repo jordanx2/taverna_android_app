@@ -35,8 +35,7 @@ public class RetrieveEstablishments extends Thread{
 
     public void makeRequest() {
         try {
-            Log.d("changed radius:" , "new radius: " + this.radius);
-            String request = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius=" + this.radius + "&type=bar&opennow=true&key=" + this.API_KEY;
+            String request = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius=" + this.radius + "&type=bar&key=" + this.API_KEY;
             URL url = new URL(request);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             InputStream stream = conn.getInputStream();

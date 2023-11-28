@@ -1,8 +1,12 @@
 package com.example.project;
 
+import android.annotation.SuppressLint;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -29,7 +34,7 @@ import java.util.Random;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterCallback {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -78,11 +83,11 @@ public class HomeFragment extends Fragment {
     static boolean sendRequest = true;
     private static int kmSpinnerValue = 1000;
     private int kmSpinnerPosition = 1;
+    private PlaceAdapter.PlaceAdapterCallback thisFragment = this;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         Spinner distance = view.findViewById(R.id.kmSpinner);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -124,12 +129,21 @@ public class HomeFragment extends Fragment {
                 }
                 else{
                     Toast.makeText(view.getContext(), "All bars viewed within: " + (kmSpinnerValue / 1000) + "km.\nIncreased distance by 1km", Toast.LENGTH_LONG).show();
+
                     kmSpinnerPosition += 1;
                     distance.setSelection(kmSpinnerPosition);
+                    String spinnerValue = String.valueOf(distance.getItemAtPosition(kmSpinnerPosition));
+                    int spinnerInt = Integer.parseInt(spinnerValue.substring(0, spinnerValue.length() - 2)) * 1000;
+                    kmSpinnerValue = spinnerInt;
+
                     sendRequest = true;
                     currentIdx = 0;
+                    makeRequest();
+                    fillBuffer((placesCache.size()) / 4);
+
                 }
-                PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer);
+
+                PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer, thisFragment);
                 recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
                 recyclerView.setAdapter(placeAdapter);
                 placesBuffer = new ArrayList<>();
@@ -139,6 +153,7 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
+
 
     public void makeRequest(){
         try {
@@ -203,4 +218,29 @@ public class HomeFragment extends Fragment {
         return null;
     }
 
+    @Override
+    public void onMapDirectionsClicked(String placeID) {
+        Bundle bundle = new Bundle();
+        bundle.putString("placeID", placeID);
+        changeFragments(bundle, new MapFragment());
+    }
+
+    @Override
+    public void onFavouritesClicked(Place place) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("place", place);
+        changeFragments(bundle, new FavouriteFragment());
+        Toast.makeText(getContext(), "Added: " + place.getPlaceName(), Toast.LENGTH_LONG).show();
+    }
+
+    private void changeFragments(Bundle bundle, Fragment fragment){
+        if(!bundle.isEmpty()){
+            fragment.setArguments(bundle);
+        }
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

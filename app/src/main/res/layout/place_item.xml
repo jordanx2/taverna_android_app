@@ -28,9 +28,9 @@
         tools:text="Balgriffin Inn" />
 
     <ImageView
+        android:id="@+id/establishmentItemDirections"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/establishmentItemDirections"
         android:src="@drawable/baseline_map_24"
         android:tint="@color/white"
         android:layout_toStartOf="@+id/establishmentItemAdd"
@@ -39,9 +39,9 @@
         />
 
     <ImageView
+        android:id="@+id/establishmentItemAdd"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/establishmentItemAdd"
         android:tint="@color/red"
         android:src="@drawable/baseline_favorite_24"
         android:layout_alignParentEnd="true"

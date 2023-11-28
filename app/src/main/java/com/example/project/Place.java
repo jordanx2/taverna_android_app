@@ -1,6 +1,8 @@
 package com.example.project;
 
-public class Place {
+import java.io.Serializable;
+
+public class Place implements Serializable {
     private String placeName;
     private double placeLatitude;
     private double placeLongitude;
