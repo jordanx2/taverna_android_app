@@ -1,13 +1,33 @@
 package com.example.project.model;
 
 import java.io.Serializable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import org.jetbrains.annotations.NotNull;
 
+@Entity(tableName= "place")
 public class Place implements Serializable {
-    private String placeName;
-    private double placeLatitude;
-    private double placeLongitude;
+
+    @NotNull
+    @PrimaryKey
     private String placeID;
+    @ColumnInfo(name = "place_name")
+    private String placeName;
+
+    @NotNull
+    @ColumnInfo(name = "place_latitude")
+    private double placeLatitude;
+
+    @NotNull
+    @ColumnInfo(name = "place_longitude")
+    private double placeLongitude;
+
+    @NotNull
+    @ColumnInfo(name = "place_rating")
     private int placeRating;
+
+    @ColumnInfo(name = "place_photo_reference")
     private String placePhotoReference;
 
 
@@ -52,7 +72,7 @@ public class Place implements Serializable {
         this.placeID = placeID;
     }
 
-    public double getPlaceRating() {
+    public int getPlaceRating() {
         return placeRating;
     }
 

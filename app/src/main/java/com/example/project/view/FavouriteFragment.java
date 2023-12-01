@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 
 import com.example.project.R;
 import com.example.project.model.Place;
+import com.example.project.model.dao.PlaceDAO;
+import com.example.project.model.database.FavouriteDatabase;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,7 @@ public class FavouriteFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private PlaceDAO placeDAO;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -67,8 +71,12 @@ public class FavouriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favourite, container, false);
-
         RecyclerView recyclerView = view.findViewById(R.id.favouritesRecycle);
+
+        placeDAO = Room.databaseBuilder(view.getContext(), FavouriteDatabase.class, "Place")
+                .allowMainThreadQueries()
+                .build()
+                .getPlaceDAO();
 
         Place addPlace = null;
         if(getArguments() != null){
@@ -77,15 +85,15 @@ public class FavouriteFragment extends Fragment {
                 addPlace = place;
             }
         }
-        ArrayList<Place> favPlace = new ArrayList<>();
-        if(addPlace != null){
-            favPlace.add(addPlace);
-        }
 
-        FavouriteAdapter adapter = new FavouriteAdapter(favPlace);
+        loadFavouritePlaces();
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(loadFavouritePlaces());
 
         return view;
+    }
+
+    public FavouriteAdapter loadFavouritePlaces(){
+        return new FavouriteAdapter(placeDAO.getAllPlaces());
     }
 }

@@ -3,23 +3,20 @@ package com.example.project.view;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.project.R;
 import com.example.project.model.ReadImage;
 import com.example.project.model.Place;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.ViewHolder>{
-    private ArrayList<Place> favList;
+    private List<Place> favList;
     private String API_KEY;
 
-    public FavouriteAdapter(ArrayList<Place> favList){
+    public FavouriteAdapter(List<Place> favList){
         this.favList = favList;
     }
 
