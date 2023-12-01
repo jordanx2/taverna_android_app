@@ -121,4 +121,14 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
         }
 
     }
+
+    @Override
+    public void onRatingBarChanged(Place place) {
+        try{
+            placeDAO.updatePlace(place);
+            loadFavouritePlaces();
+        } catch(SQLException e){
+            Log.e("removal error", "error in removing item");
+        }
+    }
 }

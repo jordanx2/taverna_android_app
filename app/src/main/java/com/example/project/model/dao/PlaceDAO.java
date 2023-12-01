@@ -4,6 +4,8 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
+
 import com.example.project.model.Place;
 import java.util.List;
 
@@ -17,4 +19,7 @@ public interface PlaceDAO {
 
     @Query("SELECT * FROM Place;")
     public List<Place> getAllPlaces();
+
+    @Update
+    public void updatePlace(Place place);
 }

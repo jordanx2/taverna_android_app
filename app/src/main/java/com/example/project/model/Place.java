@@ -25,13 +25,13 @@ public class Place implements Serializable {
 
     @NotNull
     @ColumnInfo(name = "place_rating")
-    private int placeRating;
+    private float placeRating;
 
     @ColumnInfo(name = "place_photo_reference")
     private String placePhotoReference;
 
 
-    public Place(String placeName, double placeLatitude, double placeLongitude, String placeID, int placeRating, String placePhotoReference) {
+    public Place(String placeName, double placeLatitude, double placeLongitude, String placeID, float placeRating, String placePhotoReference) {
         this.placeName = placeName;
         this.placeLatitude = placeLatitude;
         this.placeLongitude = placeLongitude;
@@ -72,11 +72,11 @@ public class Place implements Serializable {
         this.placeID = placeID;
     }
 
-    public int getPlaceRating() {
+    public float getPlaceRating() {
         return placeRating;
     }
 
-    public void setPlaceRating(int placeRating) {
+    public void setPlaceRating(float placeRating) {
         this.placeRating = placeRating;
     }
 

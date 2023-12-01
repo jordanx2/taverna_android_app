@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import com.example.project.R;
 import com.example.project.model.ReadImage;
@@ -15,6 +16,7 @@ import java.util.List;
 public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.ViewHolder>{
     public interface DeleteFavouriteCallback{
         public void onDeleteOptionClicked(Place place);
+        public void onRatingBarChanged(Place place);
     }
 
     private List<Place> favList;
@@ -39,10 +41,19 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         holder.establismentName.setText(item.getPlaceName());
         ReadImage readImage = new ReadImage();
         readImage.setImage(holder.locationImg, item.getPlacePhotoReference(), API_KEY);
+        holder.ratingBar.setRating(item.getPlaceRating());
         holder.removeItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 callback.onDeleteOptionClicked(item);
+            }
+        });
+
+        holder.ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                item.setPlaceRating(rating);
+                callback.onRatingBarChanged(item);
             }
         });
     }
@@ -61,12 +72,14 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         ImageView locationImg;
         TextView establismentName;
         ImageView removeItem;
+        RatingBar ratingBar;
 
         ViewHolder(View view) {
             super(view);
             locationImg = view.findViewById(R.id.favItemImg);
             establismentName = view.findViewById(R.id.favEstablismentName);
             removeItem = view.findViewById(R.id.deleteFavourite);
+            ratingBar = view.findViewById(R.id.ratingBar);
 
         }
     }
