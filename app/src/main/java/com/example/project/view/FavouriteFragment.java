@@ -71,7 +71,6 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
@@ -117,7 +116,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
             Toast.makeText(getContext(), "Deleted: " + place.getPlaceName(), Toast.LENGTH_SHORT).show();
 
         } catch(SQLException e){
-            Log.e("removal error", "error in removing item");
+            Log.e("SQLError", "error in removing item");
         }
 
     }
@@ -128,7 +127,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
             placeDAO.updatePlace(place);
             loadFavouritePlaces();
         } catch(SQLException e){
-            Log.e("removal error", "error in removing item");
+            Log.e("SQLError", "error in updating rating bar");
         }
     }
 }
