@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
 
 import java.io.InputStream;
 import java.net.URL;

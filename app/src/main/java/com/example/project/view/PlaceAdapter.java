@@ -1,10 +1,5 @@
-package com.example.project;
+package com.example.project.view;
 
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,19 +7,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project.R;
+import com.example.project.model.ReadImage;
+import com.example.project.model.Place;
+
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> {
     public interface PlaceAdapterCallback {
-        void onMapDirectionsClicked(String placeID);
+        void onMapDirectionsClicked(Place place);
         void onFavouritesClicked(Place place);
     }
 
@@ -54,7 +48,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         holder.establishmentDirections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callBack.onMapDirectionsClicked(place.getPlaceID());
+                callBack.onMapDirectionsClicked(place);
             }
         });
 

@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.model;
 
 import org.json.JSONArray;
 import org.json.simple.JSONObject;

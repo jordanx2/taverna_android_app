@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.controller;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -7,7 +7,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
+import com.example.project.R;
 import com.example.project.databinding.ActivityMainBinding;
+import com.example.project.view.FavouriteFragment;
+import com.example.project.view.HomeFragment;
+import com.example.project.view.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
 

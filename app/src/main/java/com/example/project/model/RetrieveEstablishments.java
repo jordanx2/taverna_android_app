@@ -1,7 +1,6 @@
-package com.example.project;
+package com.example.project.model;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.*;
 import java.net.HttpURLConnection;

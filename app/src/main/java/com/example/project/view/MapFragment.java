@@ -1,4 +1,4 @@
-package com.example.project;
+package com.example.project.view;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.project.R;
+import com.example.project.model.Place;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -106,6 +109,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         maps = googleMap;
         maps.getUiSettings().setMyLocationButtonEnabled(false);
 
+        Place place = null;
+        if(getArguments() != null){
+            Place placePassed = (Place) getArguments().getSerializable("place");
+            if(placePassed != null){
+                place = placePassed;
+            }
+        }
+
+        if(place != null){
+            LatLng latLng = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
+            maps.addMarker(new MarkerOptions().position(latLng)).setTitle(place.getPlaceName());
+            maps.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -139,10 +156,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     // Set the zoom level as required
                     maps.moveCamera(CameraUpdateFactory.newLatLngZoom(testLatLng, 14f));
-                    maps.addMarker(new MarkerOptions().position(testLatLng));
+                    maps.addMarker(new MarkerOptions().position(testLatLng)).setTitle("Your location");
                 }
             }
         });
-
     }
 }
