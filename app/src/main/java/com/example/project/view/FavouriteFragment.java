@@ -1,5 +1,6 @@
 package com.example.project.view;
 
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.project.R;
 import com.example.project.model.Place;
@@ -19,13 +21,14 @@ import com.example.project.model.dao.PlaceDAO;
 import com.example.project.model.database.FavouriteDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FavouriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavouriteFragment extends Fragment {
+public class FavouriteFragment extends Fragment implements FavouriteAdapter.DeleteFavouriteCallback {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,9 +39,11 @@ public class FavouriteFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private PlaceDAO placeDAO;
+    private FavouriteAdapter.DeleteFavouriteCallback callback = this;
+    private FavouriteAdapter adapter;
 
     public FavouriteFragment() {
-        // Required empty public constructor
+        adapter = new FavouriteAdapter(null, callback);
     }
 
     /**
@@ -95,12 +100,25 @@ public class FavouriteFragment extends Fragment {
 
         loadFavouritePlaces();
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(loadFavouritePlaces());
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
 
-    public FavouriteAdapter loadFavouritePlaces(){
-        return new FavouriteAdapter(placeDAO.getAllPlaces());
+    public void loadFavouritePlaces(){
+        adapter.updateData(placeDAO.getAllPlaces());
+    }
+
+    @Override
+    public void onDeleteOptionClicked(Place place) {
+        try{
+            placeDAO.remove(place);
+            loadFavouritePlaces();
+            Toast.makeText(getContext(), "Deleted: " + place.getPlaceName(), Toast.LENGTH_SHORT).show();
+
+        } catch(SQLException e){
+            Log.e("removal error", "error in removing item");
+        }
+
     }
 }

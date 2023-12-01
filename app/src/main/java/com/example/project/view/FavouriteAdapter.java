@@ -13,11 +13,17 @@ import com.example.project.model.Place;
 import java.util.List;
 
 public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.ViewHolder>{
+    public interface DeleteFavouriteCallback{
+        public void onDeleteOptionClicked(Place place);
+    }
+
     private List<Place> favList;
     private String API_KEY;
+    private DeleteFavouriteCallback callback;
 
-    public FavouriteAdapter(List<Place> favList){
+    public FavouriteAdapter(List<Place> favList, DeleteFavouriteCallback callback){
         this.favList = favList;
+        this.callback = callback;
     }
 
     @Override
@@ -33,6 +39,12 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         holder.establismentName.setText(item.getPlaceName());
         ReadImage readImage = new ReadImage();
         readImage.setImage(holder.locationImg, item.getPlacePhotoReference(), API_KEY);
+        holder.removeItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.onDeleteOptionClicked(item);
+            }
+        });
     }
 
     @Override
@@ -40,14 +52,22 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         return favList.size();
     }
 
+    public void updateData(List<Place> favList){
+        this.favList = favList;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView locationImg;
         TextView establismentName;
+        ImageView removeItem;
 
         ViewHolder(View view) {
             super(view);
             locationImg = view.findViewById(R.id.favItemImg);
             establismentName = view.findViewById(R.id.favEstablismentName);
+            removeItem = view.findViewById(R.id.deleteFavourite);
+
         }
     }
 }
