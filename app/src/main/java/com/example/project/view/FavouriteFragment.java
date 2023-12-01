@@ -1,5 +1,6 @@
 package com.example.project.view;
 
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +84,12 @@ public class FavouriteFragment extends Fragment {
         if(getArguments() != null){
             Place place = (Place) getArguments().getSerializable("place");
             if(place != null){
-                addPlace = place;
+                try {
+                    placeDAO.insert(place);
+                } catch(SQLiteConstraintException e){
+                    Log.e("insertion failure", "error inserting place into database");
+
+                }
             }
         }
 
