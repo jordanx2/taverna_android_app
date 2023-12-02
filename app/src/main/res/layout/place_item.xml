@@ -17,15 +17,20 @@
         android:scaleType="fitCenter"/>
 
     <TextView
-        android:textColor="@color/white"
         android:id="@+id/establismentItemName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/establishmentItemDirections"
+        android:layout_toEndOf="@id/establishmentItemImg"
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp"
-        android:layout_toEndOf="@id/establishmentItemImg"
+        android:layout_marginEnd="20dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="Balgriffin Inn" />
+
 
     <ImageView
         android:id="@+id/establishmentItemDirections"
