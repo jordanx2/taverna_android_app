@@ -1,6 +1,7 @@
 package com.example.project.model;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -51,10 +52,13 @@ public class RetrieveEstablishments extends Thread{
             }
 
             setResponse(response.toString());
+            Log.d("reponseSet", "ResponseSet: " + response.toString());
             reader.close();
             stream.close();
 
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            Log.d("reponseError", "Error: " + e.toString());
+        }
 
     }
 

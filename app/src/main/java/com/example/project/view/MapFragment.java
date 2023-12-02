@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +54,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap maps;
     private List<LatLng> directionsPointsList;
+    private LatLng userCoordinates;
 
     final int PERMISSION_REQUEST_CODE = 101;
 
@@ -119,21 +122,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         maps = googleMap;
         maps.getUiSettings().setMyLocationButtonEnabled(false);
-        LatLng destination = null;
-
-        Place place = null;
-        if(getArguments() != null){
-            Place placePassed = (Place) getArguments().getSerializable("place");
-            if(placePassed != null){
-                place = placePassed;
-            }
-        }
-
-        if(place != null){
-            destination = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
-            maps.addMarker(new MarkerOptions().position(destination)).setTitle(place.getPlaceName());
-            maps.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 14f));
-        }
 
         if (ActivityCompat.checkSelfPermission(
                 getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -149,6 +137,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         maps.setMyLocationEnabled(true);
         FusedLocationProviderClient clientLocation = LocationServices.getFusedLocationProviderClient(getContext());
+
+        LatLng destination = null;
+        Place place = null;
+        if(getArguments() != null){
+            Place placePassed = (Place) getArguments().getSerializable("place");
+            if(placePassed != null){
+                place = placePassed;
+            }
+        }
+
+        if(place != null){
+            destination = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
+            maps.addMarker(new MarkerOptions().position(destination)).setTitle(place.getPlaceName());
+            maps.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 14f));
+        }
+
         LatLng finalDestination = destination;
         clientLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
             @Override
@@ -164,23 +168,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     // Testing coordinates
                     double testLat = 53.354440;
                     double testLong = -6.278720 ;
-                    LatLng origin = new LatLng(testLat, testLong);
+                    userCoordinates = new LatLng(testLat, testLong);
 
 
                     // Set the zoom level as required
-                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, 14f));
-                    maps.addMarker(new MarkerOptions().position(origin)).setTitle("Your location");
-                    requestDirections(origin, finalDestination);
+                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(userCoordinates, 14f));
+                    maps.addMarker(new MarkerOptions().position(userCoordinates)).setTitle("Your location");
+                    requestDirections(finalDestination);
                 }
             }
         });
+
     }
 
-    public void requestDirections(LatLng origin, LatLng destination){
+    public void requestDirections(LatLng destination){
         String request = "https://maps.googleapis.com/maps/api/directions/json?origin="
-                + origin.latitude
+                + userCoordinates.latitude
                 + ","
-                + origin.longitude
+                + userCoordinates.longitude
                 +"&destination="
                 + destination.latitude
                 + ","
@@ -188,20 +193,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 + "1&key="
                 + getString(R.string.google_maps_directions_key);
 
-        RetrieveEstablishments makeRequest = new RetrieveEstablishments(request, new RetrieveEstablishmentsCallback() {
-            @Override
-            public void onResult(JSONObject response) {
-                JSONArray routes = (JSONArray) response.get("routes");
-                JSONObject route = (JSONObject) routes.get(0);
-                JSONObject polyline = (JSONObject) route.get("overview_polyline");
-                String encodedPoints = String.valueOf(polyline.get("overview_polylines"));
-                List<LatLng> pointsList = PolyUtil.decode(encodedPoints);
-                plotDirections(pointsList);
+        try {
+            RetrieveEstablishments makeRequest = new RetrieveEstablishments(request, new RetrieveEstablishmentsCallback() {
+                @Override
+                public void onResult(JSONObject response) {
+                    JSONArray routes = (JSONArray) response.get("routes");
+                    JSONObject route = (JSONObject) routes.get(0);
+                    JSONObject polyline = (JSONObject) route.get("overview_polyline");
+                    String encodedPoints = String.valueOf(polyline.get("points"));
+                    List<LatLng> pointsList = PolyUtil.decode(encodedPoints);
+                    plotDirections(pointsList);
 
-            }
+                }
 
-        });
-        new Thread(request).start();
+            });
+            new Thread(makeRequest).start();
+        } catch(Exception e){}
     }
 
     public void plotDirections(List<LatLng> pointsList){
