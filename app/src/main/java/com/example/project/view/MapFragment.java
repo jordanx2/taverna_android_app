@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.project.R;
+import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.model.Place;
 import com.example.project.model.RetrieveEstablishments;
 import com.example.project.model.RetrieveEstablishmentsCallback;
@@ -123,6 +124,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         maps = googleMap;
         maps.getUiSettings().setMyLocationButtonEnabled(false);
 
+
         if (ActivityCompat.checkSelfPermission(
                 getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -174,7 +176,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     // Set the zoom level as required
                     maps.moveCamera(CameraUpdateFactory.newLatLngZoom(userCoordinates, 14f));
                     maps.addMarker(new MarkerOptions().position(userCoordinates)).setTitle("Your location");
-                    requestDirections(finalDestination);
+
+                    if(finalDestination != null){
+                        requestDirections(finalDestination);
+                    }
+
                 }
             }
         });

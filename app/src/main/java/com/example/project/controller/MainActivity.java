@@ -12,6 +12,7 @@ import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.view.FavouriteFragment;
 import com.example.project.view.HomeFragment;
 import com.example.project.view.MapFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,5 +49,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
 
+    }
+
+    public void setSelectedBottomNavigationItem(int itemId) {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(itemId);
     }
 }

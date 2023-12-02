@@ -1,5 +1,6 @@
 package com.example.project.view;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.fragment.app.Fragment;
@@ -17,9 +18,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.project.R;
+import com.example.project.controller.MainActivity;
+import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.model.Place;
 import com.example.project.model.RetrieveEstablishments;
 import com.example.project.model.RetrieveEstablishmentsCallback;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -237,8 +242,17 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     }
 
     private void changeFragments(Bundle bundle, Fragment fragment){
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         if(!bundle.isEmpty()){
             fragment.setArguments(bundle);
+        }
+
+        if(fragment.getClass().equals(MapFragment.class)){
+            ((MainActivity) getActivity()).setSelectedBottomNavigationItem(R.id.map);
+        }
+
+        else if(fragment.getClass().equals(FavouriteFragment.class)){
+            ((MainActivity) getActivity()).setSelectedBottomNavigationItem(R.id.favourites);
         }
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
