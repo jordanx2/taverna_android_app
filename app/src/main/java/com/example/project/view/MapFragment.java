@@ -9,9 +9,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.example.project.R;
 import com.example.project.model.Place;
+import com.example.project.model.RetrieveEstablishments;
+import com.example.project.model.RetrieveEstablishmentsCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,7 +21,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.maps.android.PolyUtil;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import android.graphics.Color;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -39,8 +49,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private String mParam1;
     private String mParam2;
 
-    MapView mapView;
-    GoogleMap maps;
+    private MapView mapView;
+    private GoogleMap maps;
+    private List<LatLng> directionsPointsList;
 
     final int PERMISSION_REQUEST_CODE = 101;
 
@@ -108,6 +119,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         maps = googleMap;
         maps.getUiSettings().setMyLocationButtonEnabled(false);
+        LatLng destination = null;
 
         Place place = null;
         if(getArguments() != null){
@@ -118,9 +130,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         if(place != null){
-            LatLng latLng = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
-            maps.addMarker(new MarkerOptions().position(latLng)).setTitle(place.getPlaceName());
-            maps.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+            destination = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
+            maps.addMarker(new MarkerOptions().position(destination)).setTitle(place.getPlaceName());
+            maps.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 14f));
         }
 
         if (ActivityCompat.checkSelfPermission(
@@ -129,14 +141,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 //            // Causing some bugs requesting user permissions, will revisit
 ////            // Request permission to use location services
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{
-//                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-//                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-//            }, PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMISSION_REQUEST_CODE);
         }
 
         maps.setMyLocationEnabled(true);
         FusedLocationProviderClient clientLocation = LocationServices.getFusedLocationProviderClient(getContext());
+        LatLng finalDestination = destination;
         clientLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -151,14 +164,51 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     // Testing coordinates
                     double testLat = 53.354440;
                     double testLong = -6.278720 ;
-                    LatLng testLatLng = new LatLng(testLat, testLong);
+                    LatLng origin = new LatLng(testLat, testLong);
 
 
                     // Set the zoom level as required
-                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(testLatLng, 14f));
-                    maps.addMarker(new MarkerOptions().position(testLatLng)).setTitle("Your location");
+                    maps.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, 14f));
+                    maps.addMarker(new MarkerOptions().position(origin)).setTitle("Your location");
+                    requestDirections(origin, finalDestination);
                 }
             }
         });
+    }
+
+    public void requestDirections(LatLng origin, LatLng destination){
+        String request = "https://maps.googleapis.com/maps/api/directions/json?origin="
+                + origin.latitude
+                + ","
+                + origin.longitude
+                +"&destination="
+                + destination.latitude
+                + ","
+                + destination.longitude
+                + "1&key="
+                + getString(R.string.google_maps_directions_key);
+
+        RetrieveEstablishments makeRequest = new RetrieveEstablishments(request, new RetrieveEstablishmentsCallback() {
+            @Override
+            public void onResult(JSONObject response) {
+                JSONArray routes = (JSONArray) response.get("routes");
+                JSONObject route = (JSONObject) routes.get(0);
+                JSONObject polyline = (JSONObject) route.get("overview_polyline");
+                String encodedPoints = String.valueOf(polyline.get("overview_polylines"));
+                List<LatLng> pointsList = PolyUtil.decode(encodedPoints);
+                plotDirections(pointsList);
+
+            }
+
+        });
+        new Thread(request).start();
+    }
+
+    public void plotDirections(List<LatLng> pointsList){
+        PolylineOptions options = new PolylineOptions().width(10).color(Color.BLUE).geodesic(true);
+        for (LatLng point : pointsList) {
+            options.add(point);
+        }
+        this.maps.addPolyline(options);
     }
 }

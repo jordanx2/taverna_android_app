@@ -23,6 +23,7 @@ import com.example.project.model.RetrieveEstablishmentsCallback;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 
@@ -155,10 +156,15 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     public void makeRequest(){
         try {
             if (sendRequest) {
-                RetrieveEstablishments request = new RetrieveEstablishments(getString(R.string.google_maps_key), kmSpinnerValue, new RetrieveEstablishmentsCallback() {
+                String requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius="
+                        + kmSpinnerValue + "&type=bar&key="
+                        + getString(R.string.google_maps_key);
+                RetrieveEstablishments request = new RetrieveEstablishments(requestString, new RetrieveEstablishmentsCallback() {
                     @Override
-                    public void onResult(JSONArray response) {
-                        placesCache = loadPlaces(response);
+                    public void onResult(JSONObject response) {
+                        JSONParser parser = new JSONParser();
+                        JSONArray array = (JSONArray) response.get("results");
+                        placesCache = loadPlaces(array);
                         currentIdx = 0;
                         placesBuffer = new ArrayList<>();
                     }

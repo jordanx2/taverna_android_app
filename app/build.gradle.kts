@@ -46,4 +46,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("android.arch.persistence.room:runtime:1.0.0")
     annotationProcessor("android.arch.persistence.room:compiler:1.0.0")
+    implementation("com.google.maps.android:android-maps-utils:2.3.0")
 }
