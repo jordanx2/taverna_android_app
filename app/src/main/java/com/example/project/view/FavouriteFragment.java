@@ -88,12 +88,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
         if(getArguments() != null){
             Place place = (Place) getArguments().getSerializable("place");
             if(place != null){
-                try {
-                    placeDAO.insert(place);
-                } catch(SQLiteConstraintException e){
-                    Log.e("insertion failure", "error inserting place into database");
-
-                }
+                insertPlace(place);
             }
         }
 
@@ -103,6 +98,22 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
 
         return view;
     }
+
+    public void insertPlace(Place place){
+        boolean exists = isFavourite(place);
+        if(!isFavourite(place)) {
+            try {
+                placeDAO.insert(place);
+                Toast.makeText(getContext(), "Added: " + place.getPlaceName(), Toast.LENGTH_LONG).show();
+            } catch (SQLiteConstraintException e) {
+                Log.e("insertion failure", "error inserting place into database");
+
+            }
+        } else{
+            Toast.makeText(getContext(), place.getPlaceName() + " already exists", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     public void loadFavouritePlaces(){
         adapter.updateData(placeDAO.getAllPlaces());
@@ -119,6 +130,18 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
             Log.e("SQLError", "error in removing item");
         }
 
+    }
+
+    public boolean isFavourite(Place place){
+        List<Place> places = placeDAO.getAllPlaces();
+
+        for(Place p : places){
+            if(p.getPlaceID().matches(place.getPlaceID())){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

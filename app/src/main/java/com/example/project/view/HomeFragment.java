@@ -227,7 +227,6 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         Bundle bundle = new Bundle();
         bundle.putSerializable("place", place);
         changeFragments(bundle, new FavouriteFragment());
-        Toast.makeText(getContext(), "Added: " + place.getPlaceName(), Toast.LENGTH_LONG).show();
     }
 
     private void changeFragments(Bundle bundle, Fragment fragment){
