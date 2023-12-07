@@ -1,8 +1,11 @@
 package com.example.project.view;
 
-import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,15 +26,12 @@ import com.example.project.databinding.ActivityMainBinding;
 import com.example.project.model.Place;
 import com.example.project.model.RetrieveEstablishments;
 import com.example.project.model.RetrieveEstablishmentsCallback;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
+import android.Manifest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,6 +54,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     static int currentIdx = 0;
     private static int kmSpinnerValue = 1000;
     private PlaceAdapter.PlaceAdapterCallback thisFragment = this;
+    final int PERMISSION_REQUEST_CODE = 101;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -248,4 +249,5 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
 }
