@@ -1,5 +1,6 @@
 package com.example.project.view;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -121,23 +122,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        maps = googleMap;
-        maps.getUiSettings().setMyLocationButtonEnabled(false);
-
-
+        this.maps = googleMap;
         if (ActivityCompat.checkSelfPermission(
                 getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-//            // Causing some bugs requesting user permissions, will revisit
-////            // Request permission to use location services
             ActivityCompat.requestPermissions(getActivity(), new String[]{
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
             }, PERMISSION_REQUEST_CODE);
+        } else{
+            setupMap();
         }
 
-        maps.setMyLocationEnabled(true);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                maps.setMyLocationEnabled(true);
+                setupMap();
+            }
+        }
+    }
+
+    public void setupMap(){
+        maps.getUiSettings().setMyLocationButtonEnabled(false);
         FusedLocationProviderClient clientLocation = LocationServices.getFusedLocationProviderClient(getContext());
 
         LatLng destination = null;
@@ -169,7 +182,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     // Testing coordinates
                     double testLat = 53.354440;
-                    double testLong = -6.278720 ;
+                    double testLong = -6.278720;
                     userCoordinates = new LatLng(testLat, testLong);
 
 
@@ -184,7 +197,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
-
     }
 
     public void requestDirections(LatLng destination){
