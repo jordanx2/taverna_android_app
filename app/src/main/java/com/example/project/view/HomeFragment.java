@@ -133,6 +133,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
                 } else{
                     Toast.makeText(view.getContext(), "All bars viewed within selected distance\nIncrease distance radius to view new bars", Toast.LENGTH_LONG).show();
                     currentIdx = 0;
+                    fillBuffer(displayItems);
                 }
 
                 PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer, thisFragment);
