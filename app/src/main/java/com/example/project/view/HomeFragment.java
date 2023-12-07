@@ -126,6 +126,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
                 // The maximum amount of items that we store in the places buffer i.e., mostly is going to be the value 20
                 int displayItems = threshold / 4;
 
+                // Fill the buffer with the place objects from the places cache
                 fillBuffer(displayItems);
                 if(currentIdx < threshold){
                     currentIdx += displayItems;
