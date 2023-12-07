@@ -48,6 +48,12 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     private String mParam1;
     private String mParam2;
 
+    static ArrayList<Place> placesCache = new ArrayList<>();
+    static ArrayList<Place> placesBuffer = new ArrayList<>();
+    static int currentIdx = 0;
+    private static int kmSpinnerValue = 1000;
+    private PlaceAdapter.PlaceAdapterCallback thisFragment = this;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -78,15 +84,10 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        makeRequest();
     }
 
-    static ArrayList<Place> placesCache = new ArrayList<>();
-    static ArrayList<Place> placesBuffer = new ArrayList<>();
-    static int currentIdx = 0;
-    static boolean sendRequest = true;
-    private static int kmSpinnerValue = 1000;
-    private int kmSpinnerPosition = 1;
-    private PlaceAdapter.PlaceAdapterCallback thisFragment = this;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -107,9 +108,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = String.valueOf(parent.getItemAtPosition(position));
                 kmSpinnerValue = Integer.parseInt(item.substring(0, item.length() - 2)) * 1000;
-                kmSpinnerPosition = position;
                 makeRequest();
-
             }
 
             @Override
@@ -123,34 +122,23 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
             @Override
             public void onClick(View v) {
                 int threshold = placesCache.size();
+
+                // The maximum amount of items that we store in the places buffer i.e., mostly is going to be the value 20
                 int displayItems = threshold / 4;
 
-                if(currentIdx < threshold) {
-                    fillBuffer(displayItems);
+                fillBuffer(displayItems);
+                if(currentIdx < threshold){
                     currentIdx += displayItems;
-                    sendRequest = false;
-                }
-                else{
-                    Toast.makeText(view.getContext(), "All bars viewed within: " + (kmSpinnerValue / 1000) + "km.\nIncreased distance by 1km", Toast.LENGTH_LONG).show();
-
-                    kmSpinnerPosition += 1;
-                    distance.setSelection(kmSpinnerPosition);
-                    String spinnerValue = String.valueOf(distance.getItemAtPosition(kmSpinnerPosition));
-                    int spinnerInt = Integer.parseInt(spinnerValue.substring(0, spinnerValue.length() - 2)) * 1000;
-                    kmSpinnerValue = spinnerInt;
-
-                    sendRequest = true;
+                } else{
+                    Toast.makeText(view.getContext(), "All bars viewed within selected distance\nIncrease distance radius to view new bars", Toast.LENGTH_LONG).show();
                     currentIdx = 0;
-                    makeRequest();
-                    fillBuffer((placesCache.size()) / 4);
-
                 }
 
                 PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer, thisFragment);
                 recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
                 recyclerView.setAdapter(placeAdapter);
                 placesBuffer = new ArrayList<>();
-
+                
             }
         });
 
@@ -160,23 +148,20 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
 
     public void makeRequest(){
         try {
-            if (sendRequest) {
-                String requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius="
-                        + kmSpinnerValue + "&type=bar&key="
-                        + getString(R.string.google_maps_key);
-                RetrieveEstablishments request = new RetrieveEstablishments(requestString, new RetrieveEstablishmentsCallback() {
-                    @Override
-                    public void onResult(JSONObject response) {
-                        JSONParser parser = new JSONParser();
-                        JSONArray array = (JSONArray) response.get("results");
-                        placesCache = loadPlaces(array);
-                        currentIdx = 0;
-                        placesBuffer = new ArrayList<>();
-                    }
+            String requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius="
+                    + kmSpinnerValue + "&type=bar&key="
+                    + getString(R.string.google_maps_key);
+            RetrieveEstablishments request = new RetrieveEstablishments(requestString, new RetrieveEstablishmentsCallback() {
+                @Override
+                public void onResult(JSONObject response) {
+                    JSONArray array = (JSONArray) response.get("results");
+                    placesCache = loadPlaces(array);
+                    currentIdx = 0;
+                    placesBuffer = new ArrayList<>();
+                }
 
-                });
-                new Thread(request).start();
-            }
+            });
+            new Thread(request).start();
         } catch(ThreadDeath e){
             Log.e("Error", String.valueOf(e));
         }
