@@ -9,8 +9,10 @@ import androidx.room.Update;
 import com.example.project.model.Place;
 import java.util.List;
 
+// Data Access Object (DAO) interface for the Place entity
 @Dao
 public interface PlaceDAO {
+    // Methods to perform basic CRUD operations for Place entity
     @Insert
     public void insert(Place place);
 

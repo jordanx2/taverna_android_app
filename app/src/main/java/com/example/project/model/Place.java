@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName= "place")
 public class Place implements Serializable {
-
     @NotNull
     @PrimaryKey
     private String placeID;
@@ -30,7 +29,7 @@ public class Place implements Serializable {
     @ColumnInfo(name = "place_photo_reference")
     private String placePhotoReference;
 
-
+    // Constructor to initialize a Place object with necessary information
     public Place(String placeName, double placeLatitude, double placeLongitude, String placeID, float placeRating, String placePhotoReference) {
         this.placeName = placeName;
         this.placeLatitude = placeLatitude;
@@ -40,6 +39,7 @@ public class Place implements Serializable {
         this.placePhotoReference = placePhotoReference;
     }
 
+    // Getters & Setters for each property
     public String getPlaceName() {
         return placeName;
     }
