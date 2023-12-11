@@ -28,7 +28,7 @@ import java.util.List;
  * Use the {@link FavouriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavouriteFragment extends Fragment implements FavouriteAdapter.DeleteFavouriteCallback {
+public class FavouriteFragment extends Fragment implements FavouriteAdapter.ListenerCalback {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -39,7 +39,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
     private String mParam1;
     private String mParam2;
     private PlaceDAO placeDAO;
-    private FavouriteAdapter.DeleteFavouriteCallback callback = this;
+    private FavouriteAdapter.ListenerCalback callback = this;
     private FavouriteAdapter adapter;
 
     public FavouriteFragment() {
@@ -76,15 +76,18 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the fragments layout
         View view = inflater.inflate(R.layout.fragment_favourite, container, false);
+
         RecyclerView recyclerView = view.findViewById(R.id.favouritesRecycle);
 
+        // Initialize the Room database
         placeDAO = Room.databaseBuilder(view.getContext(), FavouriteDatabase.class, "Place")
                 .allowMainThreadQueries()
                 .build()
                 .getPlaceDAO();
 
-        Place addPlace = null;
+        // Check if a place object is passed through arguments and insert into database
         if(getArguments() != null){
             Place place = (Place) getArguments().getSerializable("place");
             if(place != null){
@@ -92,6 +95,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
             }
         }
 
+        // Load and display the favourite places in the RecyclerView
         loadFavouritePlaces();
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(adapter);
@@ -99,8 +103,8 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
         return view;
     }
 
+    // Insert the place into the database
     public void insertPlace(Place place){
-        boolean exists = isFavourite(place);
         if(!isFavourite(place)) {
             try {
                 placeDAO.insert(place);
@@ -114,11 +118,12 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
         }
     }
 
-
+    // Load and update the RecyclerView
     public void loadFavouritePlaces(){
         adapter.updateData(placeDAO.getAllPlaces());
     }
 
+    // Callback method for handling the delete option click in the adapter
     @Override
     public void onDeleteOptionClicked(Place place) {
         try{
@@ -132,6 +137,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
 
     }
 
+    // Check if a place is already a favourite
     public boolean isFavourite(Place place){
         List<Place> places = placeDAO.getAllPlaces();
 
@@ -144,6 +150,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.Dele
         return false;
     }
 
+    // Callback method for handling changes in rating bar in the adapter
     @Override
     public void onRatingBarChanged(Place place) {
         try{

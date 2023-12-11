@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Reference: https://stackoverflow.com/questions/44370162/get-location-permissions-from-user-in-android-application
     private void requestLocationPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

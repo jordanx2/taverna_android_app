@@ -163,7 +163,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     // Update the camera position (used in production)
 //                    LatLng userLatLng = new LatLng(userLatitude, userLongitude);
 
-                    // Testing coordinates
+                    // Testing coordinates (TUD)
                     double testLat = 53.354440;
                     double testLong = -6.278720;
                     userCoordinates = new LatLng(testLat, testLong);

@@ -133,7 +133,9 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
                 if(currentIdx < threshold){
                     currentIdx += displayItems;
                 } else{
-                    Toast.makeText(view.getContext(), "All bars viewed within selected distance\nIncrease distance radius to view new bars", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),
+                            "All bars viewed within selected distance\nIncrease distance radius to view new bars",
+                            Toast.LENGTH_LONG).show();
                     currentIdx = 0;
                     fillBuffer(displayItems);
                 }
@@ -215,14 +217,12 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         return null;
     }
 
-    @Override
     public void onMapDirectionsClicked(Place place) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("place", place);
         changeFragments(bundle, new MapFragment());
     }
 
-    @Override
     public void onFavouritesClicked(Place place) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("place", place);
@@ -230,7 +230,6 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     }
 
     private void changeFragments(Bundle bundle, Fragment fragment){
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         if(!bundle.isEmpty()){
             fragment.setArguments(bundle);
         }
