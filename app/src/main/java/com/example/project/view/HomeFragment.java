@@ -93,23 +93,34 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the fragments layout
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Find the spinner by ID
         Spinner distance = view.findViewById(R.id.kmSpinner);
 
+        // Array adapter for spinner using custom layout string array resource
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
                 R.layout.spinner_layout,
                 getResources().getStringArray(R.array.kmOptions)
         );
 
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         distance.setAdapter(adapter);
 
+        // Set a listener for item selection on the spinner
         distance.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Extract the selected item from the spinner
                 String item = String.valueOf(parent.getItemAtPosition(position));
+
+                // Convert it to metres
                 kmSpinnerValue = Integer.parseInt(item.substring(0, item.length() - 2)) * 1000;
+
+                // Make the HTTP request with basic 1000m value
                 makeRequest();
             }
 
@@ -117,19 +128,20 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-
+        // Find RecyclerView and button through ID
         RecyclerView recyclerView = view.findViewById(R.id.homeRecycleView);
         Button gntBtn = view.findViewById(R.id.generateBtn);
+
+        // Set a click listener for the generate button
         gntBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Calculate the number of items to display and fill buffer
                 int threshold = placesCache.size();
-
-                // The maximum amount of items that we store in the places buffer i.e., mostly is going to be the value 20
                 int displayItems = threshold / 4;
-
-                // Fill the buffer with the place objects from the places cache
                 fillBuffer(displayItems);
+
+                // Check to see if all items in cache have been viewed
                 if(currentIdx < threshold){
                     currentIdx += displayItems;
                 } else{
@@ -140,9 +152,12 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
                     fillBuffer(displayItems);
                 }
 
+                // Create a PlaceAdapter with the buffer and set it to the RecyclerView
                 PlaceAdapter placeAdapter = new PlaceAdapter(placesBuffer, thisFragment);
                 recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
                 recyclerView.setAdapter(placeAdapter);
+
+                // Clear the buffer for the next round
                 placesBuffer = new ArrayList<>();
                 
             }
@@ -151,16 +166,20 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         return view;
     }
 
-
+    // Make request to the Google Place API with the selected distance
     public void makeRequest(){
         try {
+            // Construct the request URL
             String requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius="
                     + kmSpinnerValue + "&type=bar&key="
                     + getString(R.string.google_maps_key);
             RetrieveEstablishments request = new RetrieveEstablishments(requestString, new RetrieveEstablishmentsCallback() {
                 @Override
                 public void onResult(JSONObject response) {
+                    // Process API response
                     JSONArray array = (JSONArray) response.get("results");
+
+                    // Update the cache and reset the buffer
                     placesCache = loadPlaces(array);
                     currentIdx = 0;
                     placesBuffer = new ArrayList<>();
@@ -173,6 +192,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         }
     }
 
+    // Fill the buffer with a specified number of items from the cache
     public void fillBuffer(int displayItems){
         try {
             for (int i = currentIdx; i < currentIdx + displayItems; i++) {
@@ -184,10 +204,12 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
     }
 
 
+    // Load a list of place objects from a JSON response
     public ArrayList<Place> loadPlaces(JSONArray response){
         try {
             ArrayList<Place> result = new ArrayList<>();
             for (int i = 0; i < response.size(); i++) {
+                // Extract all relevant data from response
                 JSONObject place = (JSONObject) response.get(i);
                 String name = String.valueOf(place.get("name"));
                 String placeID = String.valueOf(place.get("place_id"));
@@ -217,19 +239,23 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         return null;
     }
 
+    // Callback method for handling click event on the map icon
     public void onMapDirectionsClicked(Place place) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("place", place);
         changeFragments(bundle, new MapFragment());
     }
 
+    // Callback method for handling click event on favourite icon
     public void onFavouritesClicked(Place place) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("place", place);
         changeFragments(bundle, new FavouriteFragment());
     }
 
+    // Method to change fragments and update the bottom navigation
     private void changeFragments(Bundle bundle, Fragment fragment){
+        // Reference: https://stackoverflow.com/questions/45002974/replacing-fragments-in-android-studio
         if(!bundle.isEmpty()){
             fragment.setArguments(bundle);
         }
@@ -242,6 +268,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
             ((MainActivity) getActivity()).setSelectedBottomNavigationItem(R.id.favourites);
         }
 
+        // Replace the current fragment with the new fragment
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, fragment);
         transaction.addToBackStack(null);

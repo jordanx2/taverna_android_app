@@ -58,12 +58,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private String mParam1;
     private String mParam2;
 
+    // Used for displaying the Google map
     private MapView mapView;
+
+    // Object for interacting with the map
     private GoogleMap maps;
-    private List<LatLng> directionsPointsList;
+
+    // Store the users current location
     private LatLng userCoordinates;
 
-    final int PERMISSION_REQUEST_CODE = 101;
 
     public MapFragment() {
     }
@@ -92,8 +95,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
+        // Initialize MapView and set up async loading
         mapView = (MapView) v.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+
+        // Reference: https://stackoverflow.com/questions/35496493/getmapasync-in-fragment
         mapView.getMapAsync(this);
 
         return v;
@@ -125,17 +131,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
+    // Callback method for when the GoogleMap object is ready
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         maps = googleMap;
+
+        // Check location permissions
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Enable my location on map if permission is granted
             maps.setMyLocationEnabled(true);
         }
 
+        // Configure map UI settings
+        // Reference: https://developers.google.com/android/reference/com/google/android/gms/maps/UiSettings#setMyLocationButtonEnabled(boolean)
         maps.getUiSettings().setMyLocationButtonEnabled(false);
+
+        // Get the FusedLocationProviderClient
         FusedLocationProviderClient clientLocation = LocationServices.getFusedLocationProviderClient(getContext());
 
+        // Get the destination coordinates if provided
         LatLng destination = null;
         Place place = null;
         if(getArguments() != null){
@@ -145,6 +160,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
 
+        // Set the destination marker and camera position if a place was provided
         if(place != null){
             destination = new LatLng(place.getPlaceLatitude(), place.getPlaceLongitude());
             maps.addMarker(new MarkerOptions().position(destination)).setTitle(place.getPlaceName());
@@ -152,6 +168,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         LatLng finalDestination = destination;
+
+        // Get the users last known coordinates
         clientLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -169,11 +187,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     userCoordinates = new LatLng(testLat, testLong);
 
 
-                    // Set the zoom level as required
+                    // Set the camera position and add a marker for the users location
                     maps.moveCamera(CameraUpdateFactory.newLatLngZoom(userCoordinates, 14f));
                     maps.addMarker(new MarkerOptions().position(userCoordinates)).setTitle("Your location");
 
                     if(finalDestination != null){
+                        // Make a HTTP request
                         requestDirections(finalDestination);
                     }
 
@@ -183,7 +202,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    // Method to request directions from user's location to a destination
     public void requestDirections(LatLng destination){
+        // Construct the directions request URL
         String request = "https://maps.googleapis.com/maps/api/directions/json?origin="
                 + userCoordinates.latitude
                 + ","
@@ -196,9 +217,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 + getString(R.string.google_maps_directions_key);
 
         try {
+            // Make a asynchronous request to retrieve directions
             RetrieveEstablishments makeRequest = new RetrieveEstablishments(request, new RetrieveEstablishmentsCallback() {
                 @Override
                 public void onResult(JSONObject response) {
+                    // Parse response and plot directions on the map
                     JSONArray routes = (JSONArray) response.get("routes");
                     JSONObject route = (JSONObject) routes.get(0);
                     JSONObject polyline = (JSONObject) route.get("overview_polyline");
@@ -213,6 +236,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         } catch(Exception e){}
     }
 
+    // Method to plot directions on the map using polyline
+    // Reference: https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/model/Polyline
     public void plotDirections(List<LatLng> pointsList){
         PolylineOptions options = new PolylineOptions().width(10).color(Color.BLUE).geodesic(true);
         for (LatLng point : pointsList) {
