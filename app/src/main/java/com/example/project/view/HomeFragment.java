@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment implements PlaceAdapter.PlaceAdapterC
         try {
             // Construct the request URL
             String requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.354440,-6.278720&radius="
-                    + kmSpinnerValue + "&type=bar&key="
+                    + kmSpinnerValue + "&types=bar|night_club&keyword=-hotel&key="
                     + getString(R.string.google_maps_key);
             RetrieveEstablishments request = new RetrieveEstablishments(requestString, new RetrieveEstablishmentsCallback() {
                 @Override
