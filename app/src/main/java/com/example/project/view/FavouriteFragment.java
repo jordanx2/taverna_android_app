@@ -3,18 +3,15 @@ package com.example.project.view;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.example.project.R;
 import com.example.project.model.Place;
 import com.example.project.model.dao.PlaceDAO;
@@ -155,7 +152,6 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.List
     public void onRatingBarChanged(Place place) {
         try{
             placeDAO.updatePlace(place);
-            loadFavouritePlaces();
         } catch(SQLException e){
             Log.e("SQLError", "error in updating rating bar");
         }
